@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f3f0e8">
+    <meta name="description" content="Rill makes water bottles for the everyday outside. Meet the bottle, explore its colours, and take the long way.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Rill">
+    <meta property="og:title" content="Rill — water, well carried">
+    <meta property="og:description" content="A water bottle for slow mornings, side streets, and the plans that get better on the way.">
+    <meta property="og:url" content="https://website.uwu.markets/">
+    <link rel="icon" href="/rill-mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/ui.js"></script>
+    <script type="module" src="/scene.js"></script>
+    <title>Rill — Water, well carried</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="announcement">
+      <p><span class="announcement__dot" aria-hidden="true"></span>Good days start with a refill.</p>
+      <a href="#bottle">Meet Rill</a>
+    </div>
+
+    <header class="site-header" id="top">
+      <a class="brand" href="#top" aria-label="Rill home">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M6 20.5c5-7.2 10-10.8 15.1-10.8 5.2 0 8.6 5.1 12.1 5.1 3.2 0 5.8-1.8 8.8-5.4"></path>
+          <path d="M6.2 29c4.6-5 9.2-7.5 13.8-7.5 4.8 0 7.8 4.6 12.3 4.6 3.2 0 6.3-1.8 9.4-5.3"></path>
+          <path d="M7.4 36.3c3.8-3 7.5-4.5 11-4.5 4 0 7 3 10.9 3 3.2 0 6.5-1.6 10-4.8"></path>
+        </svg>
+        <span class="brand__word">RILL<span class="brand__period">.</span></span>
+      </a>
+
+      <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation">
+        <span class="menu-toggle__label">Menu</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
+
+      <nav class="site-nav" id="site-nav" aria-label="Main navigation">
+        <a href="#bottle">The bottle</a>
+        <a href="#everyday">Out and about</a>
+        <a href="#our-way">Our way</a>
+        <a href="#questions">Questions</a>
+      </nav>
+
+      <a class="header-link" href="#bottle">
+        Find your colour
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3 10h13M10 4l6 6-6 6"></path>
+        </svg>
+      </a>
+    </header>
+
+    <main id="main">
+      <section class="scroll-scene" id="bottle" aria-label="Rill bottle story">
+        <div class="scene-pin">
+          <div class="scene-backdrop" aria-hidden="true">
+            <div class="scene-backdrop__sun"></div>
+            <div class="scene-backdrop__orbit scene-backdrop__orbit--one"></div>
+            <div class="scene-backdrop__orbit scene-backdrop__orbit--two"></div>
+            <div class="scene-backdrop__grain"></div>
+          </div>
+
+          <div class="scene-fallback" aria-hidden="true">
+            <div class="fallback-bottle fallback-bottle--back-left">
+              <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
+            </div>
+            <div class="fallback-bottle fallback-bottle--back-right">
+              <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
+            </div>
+            <div class="fallback-bottle fallback-bottle--front">
+              <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
+            </div>
+          </div>
+
+          <canvas id="product-canvas" class="product-canvas" tabindex="0" role="img" aria-label="Interactive three-dimensional view of the Rill bottle in Tidepool. Scroll to explore, drag to rotate, or use the arrow keys.">
+            Your browser does not support the interactive 3D preview. The bottle and story remain available below.
+          </canvas>
+
+          <p class="visually-hidden" id="scene-status" role="status" aria-live="polite">Preparing the 3D preview.</p>
+        </div>
+
+        <div class="chapter-track">
+          <article class="chapter chapter--one is-current" data-chapter="0" aria-labelledby="chapter-title-1">
+            <div class="chapter__copy">
+              <p class="eyebrow"><span>01</span> WATER, WELL CARRIED</p>
+              <h1 id="chapter-title-1">Take the<br><em>long way.</em></h1>
+              <p class="chapter__lead">A reusable bottle for slow mornings, side streets, and plans that get better on the way.</p>
+              <a class="text-link" href="#our-way">A little about Rill
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M10 4l6 6-6 6"></path></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="chapter chapter--two" data-chapter="1" aria-labelledby="chapter-title-2">
+            <div class="chapter__copy">
+              <p class="eyebrow"><span>02</span> ROOM FOR A DETOUR</p>
+              <h2 id="chapter-title-2">Find a little<br><em>elsewhere.</em></h2>
+              <p class="chapter__lead">A familiar companion for the scenic route, the extra block, and the open-air pause.</p>
+              <a class="text-link" href="#everyday">See it in your day
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M10 4l6 6-6 6"></path></svg>
+              </a>
+            </div>
+          </article>
+
+          <article class="chapter chapter--three" data-chapter="2" aria-labelledby="chapter-title-3">
+            <div class="chapter__copy">
+              <p class="eyebrow"><span>03</span> YOUR DAILY RITUAL</p>
+              <h2 id="chapter-title-3">Keep good<br><em>things close.</em></h2>
+              <p class="chapter__lead">Pick a colour, make the refill part of the routine, and take the day as it comes.</p>
+              <a class="text-link" href="#everyday">Carry on
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M10 4l6 6-6 6"></path></svg>
+              </a>
+            </div>
+          </article>
+        </div>
+        <div class="scene-overlay">
+          <div class="scene-topline" aria-hidden="true">
+            <span>RILL OBJECT STUDY</span>
+            <span>01 — 03</span>
+          </div>
+
+          <div class="scene-controls" aria-label="Bottle preview controls">
+            <fieldset class="color-picker">
+              <legend>Choose a colour</legend>
+              <div class="color-picker__options">
+                <button class="color-option" type="button" data-color="tidepool" aria-pressed="true">
+                  <span class="color-option__swatch color-option__swatch--tidepool" aria-hidden="true"></span>
+                  <span>Tidepool</span>
+                </button>
+                <button class="color-option" type="button" data-color="clementine" aria-pressed="false">
+                  <span class="color-option__swatch color-option__swatch--clementine" aria-hidden="true"></span>
+                  <span>Clementine</span>
+                </button>
+                <button class="color-option" type="button" data-color="lichen" aria-pressed="false">
+                  <span class="color-option__swatch color-option__swatch--lichen" aria-hidden="true"></span>
+                  <span>Lichen</span>
+                </button>
+              </div>
+            </fieldset>
+
+            <div class="scene-control-actions">
+              <button class="control-button" id="spin-bottle" type="button">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M16.3 7.2A6.8 6.8 0 1 0 17 11"></path>
+                  <path d="M14.1 3.5 17 7.3l-4.7.7"></path>
+                </svg>
+                Turn bottle
+              </button>
+              <button class="control-button control-button--save" id="save-colour" type="button" aria-pressed="false">
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M5 3.5h10v13l-5-3.2-5 3.2z"></path>
+                </svg>
+                <span id="save-colour-label">Save this colour</span>
+              </button>
+            </div>
+            <p class="scene-status" id="colour-status" role="status" aria-live="polite" aria-atomic="true"></p>
+          </div>
+
+          <p class="scene-instructions" id="scene-instructions">Drag the bottle to turn it, or focus the preview and use the arrow keys.</p>
+        </div>
+      </section>
+
+      <section class="moments-section" id="everyday" aria-labelledby="moments-title">
+        <div class="section-heading">
+          <p class="eyebrow"><span>OUT AND ABOUT</span> / THE RILL RHYTHM</p>
+          <h2 id="moments-title">A small constant<br>in a day of <em>detours.</em></h2>
+          <p>Some days have a plan. The best ones leave space to wander.</p>
+        </div>
+        <div class="moment-grid">
+          <article class="moment-card moment-card--morning">
+            <span class="moment-card__number">01 / FIRST LIGHT</span>
+            <div class="moment-card__art" aria-hidden="true">
+              <span class="sun-shape"></span>
+              <span class="horizon-line"></span>
+              <span class="path-shape"></span>
+            </div>
+            <div class="moment-card__copy">
+              <h3>Before the day begins.</h3>
+              <p>A few quiet minutes. A good first sip. Somewhere to start.</p>
+            </div>
+          </article>
+
+          <article class="moment-card moment-card--market">
+            <span class="moment-card__number">02 / SIDE STREETS</span>
+            <div class="moment-card__art" aria-hidden="true">
+              <span class="market-disc"></span>
+              <span class="market-arch"></span>
+              <span class="market-dot"></span>
+            </div>
+            <div class="moment-card__copy">
+              <h3>One more block.</h3>
+              <p>Take the long way home. See what the corner shop put out.</p>
+            </div>
+          </article>
+
+          <article class="moment-card moment-card--outside">
+            <span class="moment-card__number">03 / OPEN AIR</span>
+            <div class="moment-card__art" aria-hidden="true">
+              <span class="outside-sun"></span>
+              <span class="outside-hill outside-hill--back"></span>
+              <span class="outside-hill outside-hill--front"></span>
+            </div>
+            <div class="moment-card__copy">
+              <h3>Stay a little longer.</h3>
+              <p>Find a bench, a shoreline, or a patch of afternoon sun.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="manifesto" id="our-way" aria-labelledby="manifesto-title">
+        <div class="manifesto__mark" aria-hidden="true">
+          <svg viewBox="0 0 220 220">
+            <circle cx="110" cy="110" r="94"></circle>
+            <path d="M36 113c22-28 43-42 63-42 23 0 34 24 54 24 13 0 24-7 36-20"></path>
+            <path d="M37 143c20-18 39-27 58-27 20 0 33 16 51 16 15 0 29-8 43-22"></path>
+          </svg>
+        </div>
+        <div class="manifesto__copy">
+          <p class="eyebrow eyebrow--light"><span>THE RILL POINT OF VIEW</span></p>
+          <h2 id="manifesto-title">Bring a little<br><em>current</em> with you.</h2>
+          <p>We think the everyday gets better when you slow down enough to notice it. Rill is a small nudge to step outside, take a breath, and bring water along.</p>
+          <a class="button button--light" href="#bottle">Find your colour
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M10 4l6 6-6 6"></path></svg>
+          </a>
+        </div>
+        <span class="manifesto__index" aria-hidden="true">R / 01</span>
+      </section>
+
+      <section class="questions-section" id="questions" aria-labelledby="questions-title">
+        <div class="questions-heading">
+          <p class="eyebrow"><span>GOOD TO KNOW</span> / BEFORE YOU GO</p>
+          <h2 id="questions-title">A few quick<br><em>answers.</em></h2>
+        </div>
+        <div class="questions-list">
+          <details>
+            <summary>How do I turn the 3D bottle?</summary>
+            <p>Drag the preview with a mouse or touch, focus it and use the arrow keys, or tap “Turn bottle”. The story follows your scroll.</p>
+          </details>
+          <details>
+            <summary>What is the bottle made from?</summary>
+            <p>Material and care details can be added once the final product specifications are confirmed.</p>
+          </details>
+          <details>
+            <summary>Can I order one here?</summary>
+            <p>This is a brand preview. Checkout, pricing, and shipping are not connected yet.</p>
+          </details>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--footer" href="#top" aria-label="Rill home">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M6 20.5c5-7.2 10-10.8 15.1-10.8 5.2 0 8.6 5.1 12.1 5.1 3.2 0 5.8-1.8 8.8-5.4"></path>
+          <path d="M6.2 29c4.6-5 9.2-7.5 13.8-7.5 4.8 0 7.8 4.6 12.3 4.6 3.2 0 6.3-1.8 9.4-5.3"></path>
+          <path d="M7.4 36.3c3.8-3 7.5-4.5 11-4.5 4 0 7 3 10.9 3 3.2 0 6.5-1.6 10-4.8"></path>
+        </svg>
+        <span class="brand__word">RILL<span class="brand__period">.</span></span>
+      </a>
+      <p>Water, well carried.</p>
+      <a class="footer-top" href="#top">Back to the top
+        <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 17V4M4 10l6-6 6 6"></path></svg>
+      </a>
+      <small>© <span id="current-year">2026</span> Rill. Made for the everyday outside.</small>
+    </footer>
+  </body>
+</html>
+
