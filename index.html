@@ -11,18 +11,13 @@
     <meta property="og:description" content="A water bottle for slow mornings, side streets, and the plans that get better on the way.">
     <meta property="og:url" content="https://website.uwu.markets/">
     <link rel="icon" href="/rill-mark.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/styles.css?v=night-studio-06">
-    <script type="module" src="/ui.js?v=studio-01"></script>
-    <script type="module" src="/scene.js?v=studio-03"></script>
+    <link rel="stylesheet" href="/styles.css?v=night-studio-09">
+    <script type="module" src="/ui.js?v=studio-02"></script>
+    <script type="module" src="/scene.js?v=studio-06"></script>
     <title>Rill — Water, well carried</title>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-
-    <div class="announcement">
-      <p><span class="announcement__dot" aria-hidden="true"></span>Good days start with a refill.</p>
-      <a href="#bottle">Meet Rill</a>
-    </div>
 
     <header class="site-header" id="top">
       <a class="brand" href="#top" aria-label="Rill home">
@@ -32,6 +27,13 @@
           <path d="M7.4 36.3c3.8-3 7.5-4.5 11-4.5 4 0 7 3 10.9 3 3.2 0 6.5-1.6 10-4.8"></path>
         </svg>
         <span class="brand__word">RILL<span class="brand__period">.</span></span>
+      </a>
+
+      <a class="header-link" href="#bottle">
+        Find your colour
+        <svg viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M3 10h13M10 4l6 6-6 6"></path>
+        </svg>
       </a>
 
       <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation">
@@ -47,38 +49,22 @@
         <a href="#our-way">Our way</a>
         <a href="#questions">Questions</a>
       </nav>
-
-      <a class="header-link" href="#bottle">
-        Find your colour
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M3 10h13M10 4l6 6-6 6"></path>
-        </svg>
-      </a>
     </header>
 
     <main id="main">
       <section class="scroll-scene" id="bottle" aria-label="Rill bottle story">
         <div class="scene-pin">
           <div class="scene-backdrop" aria-hidden="true">
-            <div class="scene-backdrop__sun"></div>
-            <div class="scene-backdrop__orbit scene-backdrop__orbit--one"></div>
-            <div class="scene-backdrop__orbit scene-backdrop__orbit--two"></div>
             <div class="scene-backdrop__grain"></div>
           </div>
 
           <div class="scene-fallback" aria-hidden="true">
-            <div class="fallback-bottle fallback-bottle--back-left">
-              <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
-            </div>
-            <div class="fallback-bottle fallback-bottle--back-right">
-              <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
-            </div>
             <div class="fallback-bottle fallback-bottle--front">
               <span class="fallback-bottle__cap"></span><span class="fallback-bottle__neck"></span><span class="fallback-bottle__body"></span>
             </div>
           </div>
 
-          <canvas id="product-canvas" class="product-canvas" tabindex="0" role="img" aria-label="Interactive three-dimensional view of the Rill bottle in Tidepool. Scroll to explore, drag to rotate, or use the arrow keys.">
+          <canvas id="product-canvas" class="product-canvas" tabindex="0" role="img" aria-label="Interactive three-dimensional view of the Rill bottle. Use the cap slider to lift the cap, drag the bottle to turn it, or use the arrow keys.">
             Your browser does not support the interactive 3D preview. The bottle and story remain available below.
           </canvas>
 
@@ -88,9 +74,9 @@
         <div class="chapter-track">
           <article class="chapter chapter--one is-current" data-chapter="0" aria-labelledby="chapter-title-1">
             <div class="chapter__copy">
-              <p class="eyebrow"><span>01</span> WATER, WELL CARRIED</p>
-              <h1 id="chapter-title-1">Take the<br><em>long way.</em></h1>
-              <p class="chapter__lead">A reusable bottle for slow mornings, side streets, and plans that get better on the way.</p>
+              <p class="eyebrow"><span>R / 01</span> WATER, WELL CARRIED</p>
+              <h1 id="chapter-title-1">Take the <em>long way.</em></h1>
+              <p class="chapter__lead">A reusable bottle for slow mornings and the scenic route.</p>
               <a class="text-link" href="#our-way">A little about Rill
                 <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 10h13M10 4l6 6-6 6"></path></svg>
               </a>
@@ -126,43 +112,56 @@
           </div>
 
           <div class="scene-controls" aria-label="Bottle preview controls">
-            <fieldset class="color-picker">
-              <legend>Choose a colour</legend>
-              <div class="color-picker__options">
-                <button class="color-option" type="button" data-color="tidepool" aria-pressed="true">
-                  <span class="color-option__swatch color-option__swatch--tidepool" aria-hidden="true"></span>
-                  <span>Abyss Jade</span>
+            <details class="colour-options">
+              <summary class="colour-options__summary">
+                <span>Colour</span>
+                <span id="current-colour-name">Abyss Jade</span>
+              </summary>
+              <fieldset class="color-picker">
+                <legend class="visually-hidden">Choose a colour</legend>
+                <div class="color-picker__options">
+                  <button class="color-option" type="button" data-color="tidepool" aria-label="Abyss Jade" aria-pressed="true">
+                    <span class="color-option__swatch color-option__swatch--tidepool" aria-hidden="true"></span>
+                    <span class="visually-hidden">Abyss Jade</span>
+                  </button>
+                  <button class="color-option" type="button" data-color="clementine" aria-label="Solar Flare" aria-pressed="false">
+                    <span class="color-option__swatch color-option__swatch--clementine" aria-hidden="true"></span>
+                    <span class="visually-hidden">Solar Flare</span>
+                  </button>
+                  <button class="color-option" type="button" data-color="lichen" aria-label="Night Orchid" aria-pressed="false">
+                    <span class="color-option__swatch color-option__swatch--lichen" aria-hidden="true"></span>
+                    <span class="visually-hidden">Night Orchid</span>
+                  </button>
+                </div>
+              </fieldset>
+              <div class="scene-control-actions">
+                <button class="control-button" id="spin-bottle" type="button">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M16.3 7.2A6.8 6.8 0 1 0 17 11"></path>
+                    <path d="M14.1 3.5 17 7.3l-4.7.7"></path>
+                  </svg>
+                  Turn bottle
                 </button>
-                <button class="color-option" type="button" data-color="clementine" aria-pressed="false">
-                  <span class="color-option__swatch color-option__swatch--clementine" aria-hidden="true"></span>
-                  <span>Solar Flare</span>
-                </button>
-                <button class="color-option" type="button" data-color="lichen" aria-pressed="false">
-                  <span class="color-option__swatch color-option__swatch--lichen" aria-hidden="true"></span>
-                  <span>Night Orchid</span>
+                <button class="control-button control-button--save" id="save-colour" type="button" aria-pressed="false">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M5 3.5h10v13l-5-3.2-5 3.2z"></path>
+                  </svg>
+                  <span id="save-colour-label">Save this colour</span>
                 </button>
               </div>
-            </fieldset>
+            </details>
 
-            <div class="scene-control-actions">
-              <button class="control-button" id="spin-bottle" type="button">
-                <svg viewBox="0 0 20 20" aria-hidden="true">
-                  <path d="M16.3 7.2A6.8 6.8 0 1 0 17 11"></path>
-                  <path d="M14.1 3.5 17 7.3l-4.7.7"></path>
-                </svg>
-                Turn bottle
-              </button>
-              <button class="control-button control-button--save" id="save-colour" type="button" aria-pressed="false">
-                <svg viewBox="0 0 20 20" aria-hidden="true">
-                  <path d="M5 3.5h10v13l-5-3.2-5 3.2z"></path>
-                </svg>
-                <span id="save-colour-label">Save this colour</span>
-              </button>
+            <div class="cap-control">
+              <label class="cap-control__label" for="cap-progress">Turn the cap</label>
+              <input class="cap-slider" id="cap-progress" type="range" min="0" max="100" step="1" value="0" aria-valuetext="Cap closed">
+              <span class="cap-control__hint">Slide to open</span>
             </div>
-            <p class="scene-status" id="colour-status" role="status" aria-live="polite" aria-atomic="true"></p>
+
+            <p class="scene-status visually-hidden" id="colour-status" role="status" aria-live="polite" aria-atomic="true"></p>
+            <p class="visually-hidden" id="cap-status" role="status" aria-live="polite" aria-atomic="true">Cap closed.</p>
           </div>
 
-          <p class="scene-instructions" id="scene-instructions">Drag the bottle to turn it, or focus the preview and use the arrow keys.</p>
+          <p class="scene-instructions" id="scene-instructions">Drag the bottle to turn it. Slide below to lift the cap.</p>
         </div>
       </section>
 
@@ -272,4 +271,5 @@
     </footer>
   </body>
 </html>
+
 
