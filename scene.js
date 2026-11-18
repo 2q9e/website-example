@@ -1,25 +1,26 @@
-import { createBottleGeometry, createSceneGeometry } from "./models/bottle-model.js?v=studio-01";
+import { createBottleGeometry } from "./models/bottle-model.js?v=studio-01";
 
 const sceneRoot = document.querySelector(".scroll-scene");
 const canvas = document.querySelector("#product-canvas");
 const sceneStatus = document.querySelector("#scene-status");
 const sceneInstructions = document.querySelector("#scene-instructions");
 const spinButton = document.querySelector("#spin-bottle");
+const capSlider = document.querySelector("#cap-progress");
 const chapters = Array.from(document.querySelectorAll(".chapter"));
 const chapterCounter = document.querySelector(".scene-topline span:last-child");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const TAU = Math.PI * 2;
 
 const palette = {
-  tidepool: { name: "Abyss Jade", body: "#16d7b2", cap: "#073a38", trim: "#c9f36a" },
+  tidepool: { name: "Abyss Jade", body: "#020805", cap: "#010303", trim: "#0a5e4c" },
   clementine: { name: "Solar Flare", body: "#ff7b61", cap: "#39243b", trim: "#ffd0a4" },
   lichen: { name: "Night Orchid", body: "#a18af6", cap: "#302343", trim: "#e0d5ff" }
 };
 
 const surfaces = {
-  bottle: [0.24, 0.08, 0.9],
+  bottle: [0.1, 0.24, 0.75],
   trim: [0.16, 0.46, 0.5],
-  cap: [0.34, 0.05, 0.42],
+  cap: [0.16, 0.2, 0.35],
   badge: [0.32, 0.08, 0.55],
   halo: [0.46, 0.3, 0.2],
   droplet: [0.08, 0.16, 0.95]
@@ -31,7 +32,6 @@ if (sceneRoot && canvas) {
   let locations = null;
   let environmentTexture = null;
   let bottleMeshes = null;
-  let sceneMeshes = null;
   let buffers = [];
   let rafId = 0;
   let visible = true;
@@ -42,6 +42,7 @@ if (sceneRoot && canvas) {
   let dragPitch = -0.035;
   let spinTween = null;
   let selectedColor = "tidepool";
+  let capProgress = 0;
   let dragging = false;
   let lastPoint = null;
   let lastStep = -1;
@@ -70,9 +71,9 @@ if (sceneRoot && canvas) {
     const height = 256;
     const pixels = new Uint8Array(width * height * 4);
     const lights = [
-      { azimuth: -0.45, width: 0.17, bottom: -0.1, top: 0.74, color: [0.12, 1, 0.78], strength: 1.25 },
-      { azimuth: 1.3, width: 0.11, bottom: -0.05, top: 0.62, color: [1, 0.38, 0.22], strength: 1.05 },
-      { azimuth: 2.55, width: 0.19, bottom: -0.18, top: 0.72, color: [0.77, 1, 0.36], strength: 0.82 }
+      { azimuth: -0.45, width: 0.17, bottom: -0.1, top: 0.74, color: [0.12, 1, 0.78], strength: 0.72 },
+      { azimuth: 1.3, width: 0.11, bottom: -0.05, top: 0.62, color: [1, 0.38, 0.22], strength: 0.62 },
+      { azimuth: 2.55, width: 0.19, bottom: -0.18, top: 0.72, color: [0.77, 1, 0.36], strength: 0.48 }
     ];
     const smoothRange = function (low, high, value) {
       const amount = clamp((value - low) / (high - low), 0, 1);
@@ -133,9 +134,12 @@ if (sceneRoot && canvas) {
     return new Float32Array([c, 0, -s, 0, 0, 1, 0, 0, s, 0, c, 0, 0, 0, 0, 1]);
   }
 
-  function scale4(value) {
+  function bottleScale4(value) {
     const matrix = new Float32Array(16);
-    matrix[0] = value; matrix[5] = value; matrix[10] = value; matrix[15] = 1;
+    matrix[0] = value * 0.64;
+    matrix[5] = value * 1.45;
+    matrix[10] = value * 0.64;
+    matrix[15] = 1;
     return matrix;
   }
 
@@ -157,7 +161,7 @@ if (sceneRoot && canvas) {
     let matrix = translation4(x, y, z);
     matrix = multiply4(matrix, rotationY4(yaw));
     matrix = multiply4(matrix, rotationX4(pitch));
-    return multiply4(matrix, scale4(scale));
+    return multiply4(matrix, bottleScale4(scale));
   }
 
   function perspective4(fieldOfView, aspect, near, far) {
@@ -397,7 +401,12 @@ if (sceneRoot && canvas) {
     drawMesh(geometry.body, model, hexColor(colors.body), surfaces.bottle);
     drawMesh(geometry.lowerTrim, model, hexColor(colors.trim), surfaces.trim);
     drawMesh(geometry.neckTrim, model, hexColor(colors.trim), surfaces.trim);
-    drawMesh(geometry.cap, multiply4(model, translation4(0, 2.255, 0)), hexColor(colors.cap), surfaces.cap);
+    const easedCapProgress = capProgress * capProgress * (3 - 2 * capProgress);
+    const capOffset = multiply4(
+      translation4(easedCapProgress * 0.94, easedCapProgress * 0.24, 0),
+      translation4(0, 2.255, 0)
+    );
+    drawMesh(geometry.cap, multiply4(model, capOffset), hexColor(colors.cap), surfaces.cap);
     geometry.badgeLines.forEach(function (line) {
       drawMesh(line, model, [0.82, 1, 0.91], surfaces.badge);
     });
@@ -415,9 +424,9 @@ if (sceneRoot && canvas) {
     const scrollYaw = progress * TAU * 1.14;
     const mainYaw = scrollYaw + currentYaw(now) + dragYaw;
     const bodyPitch = reducedMotion.matches ? dragPitch * 0.25 : dragPitch + Math.sin(progress * TAU) * 0.035;
-    const mainX = mobile ? 1.22 : 0.72 + Math.sin(progress * TAU) * 0.16;
-    const mainY = mobile ? -1.1 : -1.255 + Math.sin(progress * TAU * 2) * 0.035;
-    const mainScale = mobile ? 0.76 : 1;
+    const mainX = 0;
+    const mainY = mobile ? -1.67 : -1.85 + Math.sin(progress * TAU * 2) * 0.035;
+    const mainScale = mobile ? 0.9 : 1;
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -434,31 +443,7 @@ if (sceneRoot && canvas) {
     gl.bindTexture(gl.TEXTURE_2D, environmentTexture);
 
     const selected = palette[selectedColor] || palette.tidepool;
-    const names = Object.keys(palette);
-    const selectedIndex = names.indexOf(selectedColor);
-    const leftColor = palette[names[(selectedIndex + 1) % names.length]];
-    const rightColor = palette[names[(selectedIndex + 2) % names.length]];
-
-    const halo = compose(mobile ? 0 : 0.6, mobile ? -0.35 : -0.25, -1.55, 1.04, progress * TAU * 0.38, -0.16, mobile ? 0.84 : 1.08);
-    drawMesh(sceneMeshes.halo, halo, [0.42, 0.94, 0.78], surfaces.halo);
-
-    if (!mobile) {
-      drawBottle(bottleMeshes, -1.42, -1.23, -1.12, 0.58, -0.025, -mainYaw * 0.48, leftColor);
-      drawBottle(bottleMeshes, 2.05, -1.24, -1.5, 0.57, 0.035, mainYaw * 0.62, rightColor);
-    }
     drawBottle(bottleMeshes, mainX, mainY, 0, mainScale, bodyPitch, mainYaw, selected);
-
-    const droplets = [
-      [-1.65, 1.15, -0.2, 0.075],
-      [2.05, 1.22, -0.15, 0.09],
-      [1.68, -1.08, 0.8, 0.065],
-      [-1.92, -0.72, 0.35, 0.052]
-    ];
-    droplets.forEach(function (drop, index) {
-      const bob = reducedMotion.matches ? 0 : Math.sin(progress * TAU + index) * 0.11;
-      const model = compose(drop[0], drop[1] + bob, drop[2], progress * 0.35, progress * 0.4, drop[3]);
-      drawMesh(sceneMeshes.droplets, model, index % 2 === 0 ? [0.78, 0.94, 0.58] : [0.42, 0.9, 0.82], surfaces.droplet);
-    });
 
     if (spinTween) scheduleRender();
   }
@@ -486,7 +471,13 @@ if (sceneRoot && canvas) {
   function setSelectedColor(color) {
     if (!palette[color]) return;
     selectedColor = color;
-    canvas.setAttribute("aria-label", "Interactive three-dimensional view of the Rill bottle in " + palette[color].name + ". Scroll to explore, drag to rotate, or use the arrow keys.");
+    canvas.setAttribute("aria-label", "Interactive three-dimensional view of the Rill bottle in " + palette[color].name + ". Use the cap slider to lift the cap, drag to turn the bottle, or use the arrow keys.");
+    scheduleRender();
+  }
+
+  function onCapProgress(event) {
+    const value = Number(event.detail && event.detail.progress);
+    capProgress = clamp(Number.isFinite(value) ? value : 0, 0, 1);
     scheduleRender();
   }
 
@@ -546,7 +537,7 @@ if (sceneRoot && canvas) {
     canvas.setAttribute("aria-hidden", "true");
     canvas.setAttribute("tabindex", "-1");
     if (sceneInstructions) {
-      sceneInstructions.textContent = "Choose a colour below. The live 3D preview is unavailable in this browser.";
+      sceneInstructions.textContent = "Use the cap slider and colour options below. Bottle rotation is unavailable in this browser.";
     }
     if (spinButton) spinButton.addEventListener("click", rotateFallback);
     announce("Interactive 3D is unavailable here. The product story and colour choices remain available.");
@@ -561,7 +552,7 @@ if (sceneRoot && canvas) {
     canvas.setAttribute("aria-hidden", "true");
     canvas.setAttribute("tabindex", "-1");
     if (sceneInstructions) {
-      sceneInstructions.textContent = "The live 3D preview stopped. Choose a colour to see the bottle illustration.";
+      sceneInstructions.textContent = "The live 3D preview stopped. The cap slider and colour options still work with the bottle illustration.";
     }
     if (spinButton) spinButton.addEventListener("click", rotateFallback);
     announce("The live 3D preview stopped. The static bottle illustration is still available.");
@@ -595,7 +586,6 @@ if (sceneRoot && canvas) {
     gl.uniform1i(locations.environment, 0);
 
     const sourceBottle = createBottleGeometry();
-    const sourceScene = createSceneGeometry();
     bottleMeshes = {
       body: uploadMesh(sourceBottle.body),
       cap: uploadMesh(sourceBottle.cap),
@@ -603,23 +593,20 @@ if (sceneRoot && canvas) {
       neckTrim: uploadMesh(sourceBottle.neckTrim),
       badgeLines: sourceBottle.badgeLines.map(uploadMesh)
     };
-    sceneMeshes = {
-      halo: uploadMesh(sourceScene.halo),
-      droplets: uploadMesh(sourceScene.droplets)
-    };
-
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
     gl.disable(gl.CULL_FACE);
 
     contextAvailable = true;
+    capProgress = capSlider ? clamp(Number(capSlider.value) / 100, 0, 1) : 0;
     sceneRoot.classList.add("scene-enhanced");
     sceneRoot.dataset.scene = "ready";
     canvas.removeAttribute("aria-hidden");
     canvas.setAttribute("tabindex", "0");
-    announce("Interactive 3D preview ready. Scroll to explore the bottle story.");
+    announce("Interactive 3D preview ready. Lift the cap or turn the bottle.");
 
     listen(document, "rill:colorchange", onColorChange);
+    listen(document, "rill:capprogress", onCapProgress);
     listen(window, "scroll", onScroll, { passive: true });
     listen(window, "resize", scheduleRender, { passive: true });
     listen(document, "visibilitychange", onVisibilityChange);
@@ -670,4 +657,5 @@ if (sceneRoot && canvas) {
     cleanup.forEach(function (dispose) { dispose(); });
   }, { once: true });
 }
+
 
