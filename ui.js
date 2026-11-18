@@ -6,6 +6,9 @@ const sceneRoot = document.querySelector(".scroll-scene");
 const colourStatus = document.querySelector("#colour-status");
 const saveButton = document.querySelector("#save-colour");
 const saveLabel = document.querySelector("#save-colour-label");
+const currentColourName = document.querySelector("#current-colour-name");
+const capSlider = document.querySelector("#cap-progress");
+const capStatus = document.querySelector("#cap-status");
 const year = document.querySelector("#current-year");
 const palette = {
   tidepool: "Abyss Jade",
@@ -52,12 +55,31 @@ function selectColour(colour, announceChange) {
     button.setAttribute("aria-pressed", active ? "true" : "false");
   });
 
+  if (currentColourName) currentColourName.textContent = palette[colour];
+
   document.dispatchEvent(new CustomEvent("rill:colorchange", {
     detail: { color: colour }
   }));
 
   updateSaveControl();
   if (announceChange) announceColour("Preview colour changed to " + palette[colour] + ".");
+}
+
+function setCapProgress(value) {
+  const percent = Math.max(0, Math.min(100, Number(value) || 0));
+  const progress = percent / 100;
+  if (sceneRoot) {
+    sceneRoot.style.setProperty("--cap-shift-x", (progress * 34).toFixed(1) + "px");
+    sceneRoot.style.setProperty("--cap-shift-y", (progress * -27).toFixed(1) + "px");
+    sceneRoot.style.setProperty("--cap-rotation", (progress * 18).toFixed(1) + "deg");
+    sceneRoot.dataset.capOpen = progress >= 0.98 ? "true" : "false";
+  }
+  if (capSlider) {
+    capSlider.setAttribute("aria-valuetext", progress >= 0.98 ? "Cap open" : percent === 0 ? "Cap closed" : Math.round(percent) + " percent open");
+  }
+  document.dispatchEvent(new CustomEvent("rill:capprogress", {
+    detail: { progress: progress }
+  }));
 }
 
 if (year) year.textContent = String(new Date().getFullYear());
@@ -71,12 +93,23 @@ try {
 
 if (persistedColour) selectedColour = persistedColour;
 selectColour(selectedColour, false);
+if (capSlider) setCapProgress(capSlider.value);
 
 colorButtons.forEach(function (button) {
   button.addEventListener("click", function () {
     selectColour(button.dataset.color, true);
   });
 });
+
+if (capSlider) {
+  capSlider.addEventListener("input", function () {
+    setCapProgress(capSlider.value);
+  });
+  capSlider.addEventListener("change", function () {
+    const isOpen = Number(capSlider.value) >= 98;
+    if (capStatus) capStatus.textContent = isOpen ? "The cap is lifted and the bottle is open." : "The cap is back on the bottle.";
+  });
+}
 
 if (saveButton) {
   saveButton.addEventListener("click", function () {
@@ -135,4 +168,5 @@ if (menuButton && navigation) {
   }, { passive: true });
   setMenu(false, false);
 }
+
 
