@@ -1108,15 +1108,16 @@ svg { display: block; }
   .chapter-track { grid-template-rows: repeat(3, 100vh); grid-template-rows: repeat(3, 100svh); }
   .chapter { min-height: 100vh; min-height: 100svh; padding: 68px 16px 0; align-items: flex-start; }
   .chapter__copy {
-    width: min(100%, 440px);
-    padding: 20px 19px;
+    width: min(60vw, 250px);
+    padding: 15px 13px;
     border-radius: 6px;
     background: rgba(7, 13, 16, 0.88);
   }
   .chapter h1,
-  .chapter h2 { font-size: clamp(3.6rem, 13vw, 5.2rem); }
-  .chapter__lead { max-width: 330px; margin: 1rem 0 0.85rem; font-size: 0.92rem; }
-  .chapter .eyebrow { margin-bottom: 0.85rem; font-size: 0.57rem; }
+  .chapter h2 { font-size: clamp(2rem, 9.5vw, 2.4rem); }
+  .chapter__lead { max-width: 330px; margin: 0.65rem 0 0.55rem; font-size: 0.78rem; line-height: 1.5; }
+  .chapter .eyebrow { margin-bottom: 0.55rem; font-size: 0.5rem; }
+  .chapter .text-link { font-size: 0.65rem; }
   .moments-section { padding: 86px 18px 90px; }
   .section-heading { margin-bottom: 34px; }
   .section-heading h2,

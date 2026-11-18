@@ -415,9 +415,9 @@ if (sceneRoot && canvas) {
     const scrollYaw = progress * TAU * 1.14;
     const mainYaw = scrollYaw + currentYaw(now) + dragYaw;
     const bodyPitch = reducedMotion.matches ? dragPitch * 0.25 : dragPitch + Math.sin(progress * TAU) * 0.035;
-    const mainX = mobile ? 0 : 0.72 + Math.sin(progress * TAU) * 0.16;
-    const mainY = mobile ? -1.78 : -1.255 + Math.sin(progress * TAU * 2) * 0.035;
-    const mainScale = mobile ? 0.91 : 1;
+    const mainX = mobile ? 1.22 : 0.72 + Math.sin(progress * TAU) * 0.16;
+    const mainY = mobile ? -1.1 : -1.255 + Math.sin(progress * TAU * 2) * 0.035;
+    const mainScale = mobile ? 0.76 : 1;
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -442,10 +442,7 @@ if (sceneRoot && canvas) {
     const halo = compose(mobile ? 0 : 0.6, mobile ? -0.35 : -0.25, -1.55, 1.04, progress * TAU * 0.38, -0.16, mobile ? 0.84 : 1.08);
     drawMesh(sceneMeshes.halo, halo, [0.42, 0.94, 0.78], surfaces.halo);
 
-    if (mobile) {
-      drawBottle(bottleMeshes, -0.84, -1.32, -1.35, 0.39, -0.04, -mainYaw * 0.54, leftColor);
-      drawBottle(bottleMeshes, 0.84, -1.35, -1.55, 0.38, 0.04, mainYaw * 0.68, rightColor);
-    } else {
+    if (!mobile) {
       drawBottle(bottleMeshes, -1.42, -1.23, -1.12, 0.58, -0.025, -mainYaw * 0.48, leftColor);
       drawBottle(bottleMeshes, 2.05, -1.24, -1.5, 0.57, 0.035, mainYaw * 0.62, rightColor);
     }
