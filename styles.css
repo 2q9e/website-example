@@ -615,6 +615,20 @@ svg { display: block; }
   animation: copy-arrive 700ms var(--ease) both;
 }
 
+.scene-enhanced .chapter__copy {
+  position: sticky;
+  top: clamp(24px, 6vh, 72px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.scene-enhanced .chapter.is-current .chapter__copy {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 .eyebrow {
   margin: 0 0 1.25rem;
   display: flex;
@@ -1106,6 +1120,7 @@ svg { display: block; }
   .chapter__copy {
     width: min(60vw, 250px);
   }
+  .scene-enhanced .chapter__copy { top: 68px; }
   .chapter h1,
   .chapter h2 { font-size: clamp(2rem, 9.5vw, 2.4rem); }
   .chapter__lead { max-width: 330px; margin: 0.65rem 0 0.55rem; font-size: 0.78rem; line-height: 1.5; }
