@@ -586,6 +586,7 @@ svg { display: block; }
   z-index: 3;
   inset: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: repeat(3, 100vh);
   grid-template-rows: repeat(3, 100svh);
   pointer-events: none;
