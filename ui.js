@@ -8,9 +8,9 @@ const saveButton = document.querySelector("#save-colour");
 const saveLabel = document.querySelector("#save-colour-label");
 const year = document.querySelector("#current-year");
 const palette = {
-  tidepool: "Tidepool",
-  clementine: "Clementine",
-  lichen: "Lichen"
+  tidepool: "Abyss Jade",
+  clementine: "Solar Flare",
+  lichen: "Night Orchid"
 };
 const storageKey = "rill-saved-colour";
 const mobileMenu = window.matchMedia("(max-width: 720px)");
