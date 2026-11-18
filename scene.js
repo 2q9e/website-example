@@ -1,4 +1,4 @@
-import { createBottleGeometry, createSceneGeometry } from "./models/bottle-model.js";
+import { createBottleGeometry, createSceneGeometry } from "./models/bottle-model.js?v=studio-01";
 
 const sceneRoot = document.querySelector(".scroll-scene");
 const canvas = document.querySelector("#product-canvas");
@@ -11,15 +11,25 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const TAU = Math.PI * 2;
 
 const palette = {
-  tidepool: { name: "Tidepool", body: "#62b6a8", cap: "#1d5045", trim: "#dce9dc" },
-  clementine: { name: "Clementine", body: "#f18a64", cap: "#713b35", trim: "#f5c29e" },
-  lichen: { name: "Lichen", body: "#a0ad70", cap: "#354a3a", trim: "#e2dcb0" }
+  tidepool: { name: "Abyss Jade", body: "#16d7b2", cap: "#073a38", trim: "#c9f36a" },
+  clementine: { name: "Solar Flare", body: "#ff7b61", cap: "#39243b", trim: "#ffd0a4" },
+  lichen: { name: "Night Orchid", body: "#a18af6", cap: "#302343", trim: "#e0d5ff" }
+};
+
+const surfaces = {
+  bottle: [0.24, 0.08, 0.9],
+  trim: [0.16, 0.46, 0.5],
+  cap: [0.34, 0.05, 0.42],
+  badge: [0.32, 0.08, 0.55],
+  halo: [0.46, 0.3, 0.2],
+  droplet: [0.08, 0.16, 0.95]
 };
 
 if (sceneRoot && canvas) {
   let gl = null;
   let program = null;
   let locations = null;
+  let environmentTexture = null;
   let bottleMeshes = null;
   let sceneMeshes = null;
   let buffers = [];
@@ -53,6 +63,53 @@ if (sceneRoot && canvas) {
   function hexColor(hex) {
     const value = parseInt(hex.slice(1), 16);
     return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+  }
+
+  function studioEnvironmentPixels() {
+    const width = 512;
+    const height = 256;
+    const pixels = new Uint8Array(width * height * 4);
+    const lights = [
+      { azimuth: -0.45, width: 0.17, bottom: -0.1, top: 0.74, color: [0.12, 1, 0.78], strength: 1.25 },
+      { azimuth: 1.3, width: 0.11, bottom: -0.05, top: 0.62, color: [1, 0.38, 0.22], strength: 1.05 },
+      { azimuth: 2.55, width: 0.19, bottom: -0.18, top: 0.72, color: [0.77, 1, 0.36], strength: 0.82 }
+    ];
+    const smoothRange = function (low, high, value) {
+      const amount = clamp((value - low) / (high - low), 0, 1);
+      return amount * amount * (3 - 2 * amount);
+    };
+
+    for (let y = 0; y < height; y += 1) {
+      const elevation = (y / (height - 1) - 0.5) * Math.PI;
+      const sky = smoothRange(-0.2, 0.42, elevation);
+      const horizonGlow = Math.exp(-Math.pow((elevation - 0.015) / 0.29, 2));
+
+      for (let x = 0; x < width; x += 1) {
+        const azimuth = (x / width - 0.5) * Math.PI * 2;
+        const color = [
+          0.018 + sky * 0.035 + horizonGlow * 0.025,
+          0.027 + sky * 0.07 + horizonGlow * 0.12,
+          0.038 + sky * 0.11 + horizonGlow * 0.14
+        ];
+
+        lights.forEach(function (light) {
+          const angle = Math.atan2(Math.sin(azimuth - light.azimuth), Math.cos(azimuth - light.azimuth));
+          const horizontal = 1 - smoothRange(light.width * 0.58, light.width, Math.abs(angle));
+          const vertical = smoothRange(light.bottom - 0.06, light.bottom + 0.04, elevation) *
+            (1 - smoothRange(light.top - 0.04, light.top + 0.08, elevation));
+          const intensity = horizontal * vertical * light.strength;
+          for (let channel = 0; channel < 3; channel += 1) color[channel] += light.color[channel] * intensity;
+        });
+
+        const index = (y * width + x) * 4;
+        pixels[index] = Math.round(Math.min(1, color[0]) * 255);
+        pixels[index + 1] = Math.round(Math.min(1, color[1]) * 255);
+        pixels[index + 2] = Math.round(Math.min(1, color[2]) * 255);
+        pixels[index + 3] = 255;
+      }
+    }
+
+    return { width, height, pixels };
   }
 
   function clamp(value, min, max) {
@@ -140,18 +197,66 @@ if (sceneRoot && canvas) {
     ].join("\n");
 
     const fragmentSource = [
-      "precision mediump float;", "uniform vec3 uColor;", "uniform vec3 uLight;",
+      "#ifdef GL_FRAGMENT_PRECISION_HIGH",
+      "precision highp float;",
+      "#else",
+      "precision mediump float;",
+      "#endif",
+      "uniform vec3 uColor;", "uniform vec3 uLight;", "uniform vec3 uCamera;",
+      "uniform vec3 uMaterial;", "uniform sampler2D uEnvironment;",
       "varying vec3 vPosition;", "varying vec3 vNormal;",
+      "const float PI = 3.14159265359;",
+      "vec3 environmentSample(vec3 direction, float roughness) {",
+      "  vec3 ray = normalize(direction);",
+      "  vec2 uv = vec2(atan(ray.z, ray.x) / (2.0 * PI) + 0.5, asin(clamp(ray.y, -1.0, 1.0)) / PI + 0.5);",
+      "  float blur = roughness * 0.012;",
+      "  vec3 sharp = texture2D(uEnvironment, uv).rgb;",
+      "  vec3 wide = (texture2D(uEnvironment, uv + vec2(blur, 0.0)).rgb + texture2D(uEnvironment, uv - vec2(blur, 0.0)).rgb) * 0.5;",
+      "  return mix(sharp, wide, roughness * 0.55);",
+      "}",
+      "float distributionGGX(float nDotH, float roughness) {",
+      "  float alpha = roughness * roughness;",
+      "  float alphaSquared = alpha * alpha;",
+      "  float denominator = nDotH * nDotH * (alphaSquared - 1.0) + 1.0;",
+      "  return alphaSquared / max(PI * denominator * denominator, 0.001);",
+      "}",
+      "float geometrySchlick(float nDotV, float roughness) {",
+      "  float k = (roughness + 1.0);",
+      "  k = k * k * 0.125;",
+      "  return nDotV / max(nDotV * (1.0 - k) + k, 0.001);",
+      "}",
+      "vec3 fresnelSchlick(float cosine, vec3 f0) {",
+      "  return f0 + (1.0 - f0) * pow(1.0 - cosine, 5.0);",
+      "}",
       "void main(void) {",
       "  vec3 normal = normalize(vNormal);",
+      "  vec3 viewDirection = normalize(uCamera - vPosition);",
       "  vec3 lightDirection = normalize(uLight - vPosition);",
-      "  vec3 viewDirection = normalize(vec3(0.0, 0.0, 7.0) - vPosition);",
       "  vec3 halfDirection = normalize(lightDirection + viewDirection);",
-      "  float diffuse = max(dot(normal, lightDirection), 0.0);",
-      "  float specular = pow(max(dot(normal, halfDirection), 0.0), 28.0) * 0.3;",
-      "  float rim = pow(1.0 - max(dot(normal, viewDirection), 0.0), 2.0) * 0.16;",
-      "  vec3 color = uColor * (0.38 + diffuse * 0.68) + vec3(specular + rim);",
-      "  gl_FragColor = vec4(pow(max(color, 0.0), vec3(0.92)), 1.0);",
+      "  float roughness = clamp(uMaterial.x, 0.07, 0.92);",
+      "  float metallic = clamp(uMaterial.y, 0.0, 1.0);",
+      "  float coat = clamp(uMaterial.z, 0.0, 1.0);",
+      "  float nDotL = max(dot(normal, lightDirection), 0.0);",
+      "  float nDotV = max(dot(normal, viewDirection), 0.001);",
+      "  float nDotH = max(dot(normal, halfDirection), 0.0);",
+      "  float vDotH = max(dot(viewDirection, halfDirection), 0.0);",
+      "  vec3 baseColor = pow(max(uColor, vec3(0.0)), vec3(2.2));",
+      "  vec3 f0 = mix(vec3(0.04), baseColor, metallic);",
+      "  vec3 fresnel = fresnelSchlick(vDotH, f0);",
+      "  float distribution = distributionGGX(nDotH, roughness);",
+      "  float geometryTerm = geometrySchlick(nDotV, roughness) * geometrySchlick(nDotL, roughness);",
+      "  vec3 specular = distribution * geometryTerm * fresnel / max(4.0 * nDotV * max(nDotL, 0.001), 0.001);",
+      "  vec3 directLight = (baseColor * (1.0 - metallic) * 0.78 + specular) * nDotL * vec3(1.1, 1.22, 1.16);",
+      "  vec3 diffuseEnvironment = pow(environmentSample(normal, 0.88), vec3(2.2));",
+      "  vec3 reflectedRay = reflect(-viewDirection, normal);",
+      "  vec3 reflectedEnvironment = pow(environmentSample(reflectedRay, roughness), vec3(2.2));",
+      "  vec3 ambient = diffuseEnvironment * baseColor * (1.0 - metallic) * 0.82;",
+      "  vec3 reflection = reflectedEnvironment * fresnel * (0.34 + coat * 0.72);",
+      "  float coatFresnel = 0.04 + 0.96 * pow(1.0 - vDotH, 5.0);",
+      "  float rim = pow(1.0 - nDotV, 3.2);",
+      "  vec3 color = directLight + ambient + reflection + vec3(0.0, 0.14, 0.12) * rim;",
+      "  color += vec3(0.8, 0.95, 0.88) * coatFresnel * coat * specular * 0.26;",
+      "  gl_FragColor = vec4(pow(max(color, 0.0), vec3(1.0 / 2.2)), 1.0);",
       "}"
     ].join("\n");
 
@@ -196,17 +301,31 @@ if (sceneRoot && canvas) {
     };
   }
 
+  function createEnvironmentTexture() {
+    const environment = studioEnvironmentPixels();
+    const texture = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, environment.width, environment.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, environment.pixels);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    return texture;
+  }
+
   function bindAttribute(buffer, location) {
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
     gl.enableVertexAttribArray(location);
     gl.vertexAttribPointer(location, 3, gl.FLOAT, false, 0, 0);
   }
 
-  function drawMesh(mesh, modelMatrix, color) {
+  function drawMesh(mesh, modelMatrix, color, material) {
     bindAttribute(mesh.position, locations.position);
     bindAttribute(mesh.normal, locations.normal);
     gl.uniformMatrix4fv(locations.model, false, modelMatrix);
     gl.uniform3fv(locations.color, color);
+    gl.uniform3fv(locations.material, material || surfaces.bottle);
     if (mesh.index) {
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, mesh.index);
       gl.drawElements(mesh.mode, mesh.count, gl.UNSIGNED_SHORT, 0);
@@ -220,7 +339,15 @@ if (sceneRoot && canvas) {
     const bounds = canvas.getBoundingClientRect();
     if (bounds.width < 1 || bounds.height < 1) return;
     const mobile = window.matchMedia("(max-width: 720px)").matches;
-    const ratio = Math.min(window.devicePixelRatio || 1, mobile ? 1.25 : 1.5);
+    const sourcePixels = bounds.width * bounds.height;
+    const maxRenderWidth = 3840;
+    const maxRenderHeight = 2160;
+    const resolutionCeiling = maxRenderWidth * maxRenderHeight;
+    const deviceRatio = window.devicePixelRatio || 1;
+    const preferredRatio = Math.max(deviceRatio, mobile ? 1 : 1.5);
+    const pixelBudgetRatio = Math.sqrt(resolutionCeiling / Math.max(1, sourcePixels));
+    const dimensionRatio = Math.min(maxRenderWidth / bounds.width, maxRenderHeight / bounds.height);
+    const ratio = Math.min(preferredRatio, mobile ? 1.5 : 2, pixelBudgetRatio, dimensionRatio);
     const width = Math.max(1, Math.round(bounds.width * ratio));
     const height = Math.max(1, Math.round(bounds.height * ratio));
     if (canvas.width !== width || canvas.height !== height) {
@@ -267,12 +394,12 @@ if (sceneRoot && canvas) {
 
   function drawBottle(geometry, x, y, z, scale, pitch, yaw, colors) {
     const model = compose(x, y, z, pitch, yaw, scale);
-    drawMesh(geometry.body, model, hexColor(colors.body));
-    drawMesh(geometry.lowerTrim, model, hexColor(colors.trim));
-    drawMesh(geometry.neckTrim, model, hexColor(colors.trim));
-    drawMesh(geometry.cap, multiply4(model, translation4(0, 2.255, 0)), hexColor(colors.cap));
+    drawMesh(geometry.body, model, hexColor(colors.body), surfaces.bottle);
+    drawMesh(geometry.lowerTrim, model, hexColor(colors.trim), surfaces.trim);
+    drawMesh(geometry.neckTrim, model, hexColor(colors.trim), surfaces.trim);
+    drawMesh(geometry.cap, multiply4(model, translation4(0, 2.255, 0)), hexColor(colors.cap), surfaces.cap);
     geometry.badgeLines.forEach(function (line) {
-      drawMesh(line, model, [0.95, 0.96, 0.87]);
+      drawMesh(line, model, [0.82, 1, 0.91], surfaces.badge);
     });
   }
 
@@ -301,7 +428,10 @@ if (sceneRoot && canvas) {
     const view = translation4(0, 0, mobile ? -7.35 : -7.0);
     gl.uniformMatrix4fv(locations.projection, false, projection);
     gl.uniformMatrix4fv(locations.view, false, view);
+    gl.uniform3fv(locations.camera, [0, 0, mobile ? 7.35 : 7.0]);
     gl.uniform3fv(locations.light, [2.8, 4.6, 5.8]);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, environmentTexture);
 
     const selected = palette[selectedColor] || palette.tidepool;
     const names = Object.keys(palette);
@@ -310,7 +440,7 @@ if (sceneRoot && canvas) {
     const rightColor = palette[names[(selectedIndex + 2) % names.length]];
 
     const halo = compose(mobile ? 0 : 0.6, mobile ? -0.35 : -0.25, -1.55, 1.04, progress * TAU * 0.38, -0.16, mobile ? 0.84 : 1.08);
-    drawMesh(sceneMeshes.halo, halo, [0.91, 0.75, 0.36]);
+    drawMesh(sceneMeshes.halo, halo, [0.42, 0.94, 0.78], surfaces.halo);
 
     if (mobile) {
       drawBottle(bottleMeshes, -0.84, -1.32, -1.35, 0.39, -0.04, -mainYaw * 0.54, leftColor);
@@ -330,7 +460,7 @@ if (sceneRoot && canvas) {
     droplets.forEach(function (drop, index) {
       const bob = reducedMotion.matches ? 0 : Math.sin(progress * TAU + index) * 0.11;
       const model = compose(drop[0], drop[1] + bob, drop[2], progress * 0.35, progress * 0.4, drop[3]);
-      drawMesh(sceneMeshes.droplets, model, index % 2 === 0 ? [0.92, 0.79, 0.47] : [0.71, 0.84, 0.75]);
+      drawMesh(sceneMeshes.droplets, model, index % 2 === 0 ? [0.78, 0.94, 0.58] : [0.42, 0.9, 0.82], surfaces.droplet);
     });
 
     if (spinTween) scheduleRender();
@@ -444,7 +574,7 @@ if (sceneRoot && canvas) {
     gl = canvas.getContext("webgl", {
       alpha: true,
       antialias: true,
-      powerPreference: "low-power",
+      powerPreference: "high-performance",
       preserveDrawingBuffer: false
     });
     if (!gl) throw new Error("webgl");
@@ -458,8 +588,14 @@ if (sceneRoot && canvas) {
       view: gl.getUniformLocation(program, "uView"),
       model: gl.getUniformLocation(program, "uModel"),
       color: gl.getUniformLocation(program, "uColor"),
-      light: gl.getUniformLocation(program, "uLight")
+      light: gl.getUniformLocation(program, "uLight"),
+      camera: gl.getUniformLocation(program, "uCamera"),
+      material: gl.getUniformLocation(program, "uMaterial"),
+      environment: gl.getUniformLocation(program, "uEnvironment")
     };
+
+    environmentTexture = createEnvironmentTexture();
+    gl.uniform1i(locations.environment, 0);
 
     const sourceBottle = createBottleGeometry();
     const sourceScene = createSceneGeometry();
@@ -521,6 +657,7 @@ if (sceneRoot && canvas) {
       if (resizeObserver) resizeObserver.disconnect();
       if (intersectionObserver) intersectionObserver.disconnect();
       if (gl) buffers.forEach(function (buffer) { gl.deleteBuffer(buffer); });
+      if (gl && environmentTexture) gl.deleteTexture(environmentTexture);
       if (gl && program) gl.deleteProgram(program);
     });
 

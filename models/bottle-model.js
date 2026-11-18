@@ -98,7 +98,7 @@ function createBadgeLines() {
   for (let row = 0; row < waveRows.length; row += 1) {
     const positions = [];
     const normals = [];
-    const count = 34;
+    const count = 80;
 
     for (let i = 0; i <= count; i += 1) {
       const x = -0.235 + (i / count) * 0.47;
@@ -134,7 +134,7 @@ export function createBottleGeometry() {
     [0.345, 2.13],
     [0.345, 2.26],
     [0, 2.26]
-  ]);
+  ], 160);
 
   const cap = lathe([
     [0, 0],
@@ -150,21 +150,21 @@ export function createBottleGeometry() {
     [0.31, 0.25],
     [0.285, 0.295],
     [0, 0.295]
-  ], 48);
+  ], 128);
 
   return {
     body,
     cap,
-    lowerTrim: torus(0.707, 0.018, 0.165),
-    neckTrim: torus(0.346, 0.018, 2.145, 48, 7),
+    lowerTrim: torus(0.707, 0.018, 0.165, 144, 12),
+    neckTrim: torus(0.346, 0.018, 2.145, 128, 10),
     badgeLines: createBadgeLines()
   };
 }
 
 export function createSceneGeometry() {
   return {
-    halo: torus(1.48, 0.012, 0, 72, 6),
-    droplets: lathe(sphereProfile(), 24)
+    halo: torus(1.48, 0.012, 0, 160, 10),
+    droplets: lathe(sphereProfile(24), 48)
   };
 }
 
