@@ -1153,9 +1153,9 @@ svg { display: block; }
   .announcement a { font-size: 0.56rem; }
   .scene-control-actions { flex-wrap: wrap; }
   .control-button { flex: 1 1 auto; justify-content: center; }
-  .chapter__copy { padding: 17px 15px; }
+  .chapter__copy { padding: 14px 12px; }
   .chapter h1,
-  .chapter h2 { font-size: 3.35rem; }
+  .chapter h2 { font-size: 2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
