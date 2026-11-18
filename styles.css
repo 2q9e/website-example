@@ -603,13 +603,9 @@ svg { display: block; }
 
 .chapter__copy {
   width: min(460px, 47vw);
-  padding: clamp(22px, 3vw, 39px);
-  border: 1px solid rgba(134, 255, 222, 0.2);
-  border-radius: 3px;
-  background: linear-gradient(140deg, rgba(7, 13, 16, 0.83), rgba(13, 18, 27, 0.65));
-  box-shadow: 0 24px 76px rgba(0, 0, 0, 0.38), inset 0 1px rgba(244, 246, 237, 0.06);
-  backdrop-filter: blur(15px) saturate(130%);
+  padding: 0;
   pointer-events: auto;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.42);
   transform: translateY(12px);
   transition: transform 700ms var(--ease), background-color 300ms ease;
 }
@@ -649,8 +645,8 @@ svg { display: block; }
   letter-spacing: -0.035em;
   line-height: 0.88;
   text-transform: uppercase;
-  width: 125%;
-  transform: scaleX(0.8);
+  width: 150%;
+  transform: scaleX(0.666667);
   transform-origin: left top;
 }
 
@@ -1109,9 +1105,6 @@ svg { display: block; }
   .chapter { min-height: 100vh; min-height: 100svh; padding: 68px 16px 0; align-items: flex-start; }
   .chapter__copy {
     width: min(60vw, 250px);
-    padding: 15px 13px;
-    border-radius: 6px;
-    background: rgba(7, 13, 16, 0.88);
   }
   .chapter h1,
   .chapter h2 { font-size: clamp(2rem, 9.5vw, 2.4rem); }
@@ -1153,7 +1146,6 @@ svg { display: block; }
   .announcement a { font-size: 0.56rem; }
   .scene-control-actions { flex-wrap: wrap; }
   .control-button { flex: 1 1 auto; justify-content: center; }
-  .chapter__copy { padding: 14px 12px; }
   .chapter h1,
   .chapter h2 { font-size: 2rem; }
 }
@@ -1206,8 +1198,7 @@ svg { display: block; }
 @media (min-width: 721px) {
   .chapter {
     align-items: flex-start;
-    padding-top: max(12px, calc(100vh - 739px));
-    padding-top: max(12px, calc(100svh - 739px));
+    padding-top: clamp(24px, 6vh, 72px);
   }
 }
 
