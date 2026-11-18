@@ -1,6 +1,8 @@
 # Rill
 
-Rill is a responsive, static landing page concept for a water bottle company. It uses a custom wordmark, procedural WebGL bottle models, and a scroll-driven product story.
+Rill is a responsive, static landing page concept for a water bottle company. It uses a custom wordmark, smooth procedural WebGL bottle models, a dark studio palette, and a scroll-driven product story.
+
+The 3D preview targets up to 3840 × 2160 backing pixels, with a lower cap on mobile. Its WebGL shader uses GGX-style highlights and a small procedural studio environment map to create glossy, ray-tracing-inspired reflections. These are real-time environment reflections, not hardware ray tracing. The canvas stops rendering while it is idle, hidden, or outside the viewport.
 
 ## Run locally
 
@@ -11,7 +13,7 @@ Serve this directory with any static HTTP server that supports JavaScript module
 - `index.html` — page structure and copy
 - `styles.css` — visual system and responsive layout
 - `ui.js` — navigation, color choices, and local saved state
-- `scene.js` — WebGL renderer and scroll interaction
+- `scene.js` — adaptive-resolution WebGL renderer, studio lighting, and scroll interaction
 - `models/bottle-model.js` — procedural bottle geometry source
 - `rill-mark.svg` — favicon and brand mark
 - `_headers` — Cloudflare Pages security headers
