@@ -344,7 +344,7 @@ if (sceneRoot && canvas) {
     const maxRenderHeight = 2160;
     const resolutionCeiling = maxRenderWidth * maxRenderHeight;
     const deviceRatio = window.devicePixelRatio || 1;
-    const preferredRatio = Math.max(deviceRatio, mobile ? 1 : 1.5);
+    const preferredRatio = Math.max(deviceRatio, 2);
     const pixelBudgetRatio = Math.sqrt(resolutionCeiling / Math.max(1, sourcePixels));
     const dimensionRatio = Math.min(maxRenderWidth / bounds.width, maxRenderHeight / bounds.height);
     const ratio = Math.min(preferredRatio, mobile ? 1.5 : 2, pixelBudgetRatio, dimensionRatio);
